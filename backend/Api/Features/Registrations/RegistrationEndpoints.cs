@@ -6,6 +6,9 @@ using FluentValidation;
 using Application.Features.GetRegistrations;
 using Application.Features.GetRegistrationById;
 using Application.Features.GetRegistrationSummary;
+using Application.Abstractions.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Api.Features.Registrations;
 public static class RegistrationEndpoints
 {
@@ -69,10 +72,12 @@ public static class RegistrationEndpoints
             return Results.Ok(result.Value);
         });
 
+
         group.MapPost("/", async (
             CreateRegistrationCommand command,
             ICommandHandler<CreateRegistrationCommand, Result<Guid>> handler,
             IValidator<CreateRegistrationCommand> validator,
+            IAppDbContext dbContext,
             CancellationToken cancellationToken) =>
         {
             var validation = await validator.ValidateAsync(
@@ -111,9 +116,21 @@ public static class RegistrationEndpoints
                 });
             }
 
+            var createdRegistration = await dbContext.Registrations
+                .AsNoTracking()
+                .FirstAsync(
+                    x => x.Id == result.Value,
+                    cancellationToken);
+
             return Results.Created(
-                $"/api/registrations/{result.Value}",
-                new { id = result.Value });
+                $"/api/registrations/{createdRegistration.Id}",
+                new
+                {
+                    id = createdRegistration.Id,
+                    registrationNumber = createdRegistration.RegistrationNumber,
+                    registrationDate = createdRegistration.RegistrationDate,
+                    registrationFee = createdRegistration.RegistrationFee
+                });
         });
 
         return app;

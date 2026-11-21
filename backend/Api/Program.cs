@@ -27,8 +27,19 @@ builder.Services.AddCors(options =>
 });
 
 // Database
+var databasePath = Path.GetFullPath(
+    Path.Combine(
+        AppContext.BaseDirectory,
+        "..",
+        "..",
+        "..",
+        "carshow.db"));
+
+Console.WriteLine("DATABASE PATH: " + databasePath);
+Console.WriteLine("DATABASE EXISTS: " + File.Exists(databasePath));
+
 builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options =>
-    options.UseSqlite("Data Source=carshow.db"));
+    options.UseSqlite($"Data Source={databasePath}"));
 
 // Validators
 builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
