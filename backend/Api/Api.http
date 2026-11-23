@@ -1,6 +1,35 @@
 @Api_HostAddress = http://localhost:5205
 
-GET {{Api_HostAddress}}/api/students/
+### CASE 14 - Get all registrations
+GET {{Api_HostAddress}}/api/registrations
 Accept: application/json
 
 ###
+
+### CASE 20 - Find by registration type
+GET {{Api_HostAddress}}/api/registrations?registrationType=VIP
+Accept: application/json
+
+###
+
+### CASE 21 - Find by registration status
+GET {{Api_HostAddress}}/api/registrations?status=Confirmed
+Accept: application/json
+
+###
+
+### CASE 22 - Find by participant name
+GET {{Api_HostAddress}}/api/registrations?search=juan
+Accept: application/json
+
+###
+
+### CASE 23 - Name search ignores case
+GET {{Api_HostAddress}}/api/registrations?search=JUAN
+Accept: application/json
+
+###
+
+### CASE 24 - Partial name match
+GET {{Api_HostAddress}}/api/registrations?search=Ju
+Accept: application/json

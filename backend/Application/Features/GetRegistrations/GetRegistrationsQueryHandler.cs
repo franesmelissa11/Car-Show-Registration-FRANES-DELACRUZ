@@ -49,6 +49,7 @@ public sealed class GetRegistrationsQueryHandler(
 
         var page = Math.Max(1, query.Page);
         var pageSize = Math.Clamp(query.PageSize, 1, 100);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         var items = await registrations
             .OrderByDescending(x => x.RegistrationDate)
@@ -75,10 +76,11 @@ public sealed class GetRegistrationsQueryHandler(
         )).ToList();
 
         return Result<GetRegistrationsResponse>.Success(
-            new GetRegistrationsResponse(
-                response,
-                page,
-                pageSize,
-                totalCount));
+         new GetRegistrationsResponse(
+         response,
+         page,
+         pageSize,
+         totalCount,
+         totalPages));
     }
 }

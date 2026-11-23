@@ -16,7 +16,8 @@ public sealed record GetRegistrationsResponse(
     IReadOnlyList<RegistrationListItem> Registrations,
     int Page,
     int PageSize,
-    int TotalCount
+    int TotalCount,
+    int TotalPages
 );
 
 public sealed record RegistrationListItem(
