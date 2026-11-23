@@ -63,8 +63,12 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, _, _) =>
     {
-        document.Info.Title = "Vertical Slice API Template by Elvin Manuel R. Luces, MIT";
-        document.Info.Description = "A simple API demonstrating Vertical Slice Architecture";
+        document.Info.Title = "Car Show Registration System API";
+        document.Info.Description =
+            "Backend API for managing car show registrations, participant information, registration types, payment details, and registration summaries.";
+
+        document.Info.Version = "v1";
+
         return Task.CompletedTask;
     });
 });
@@ -79,7 +83,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    for (int number = 2; number <= 25; number++)
+    for (int number = 1; number <= 25; number++)
     {
         var registrationNumber = $"CS27-{number:0000}";
 
@@ -152,6 +156,15 @@ if (app.Environment.IsDevelopment())
 // Root endpoint
 app.MapGet("/", () => "Welcome to the Vertical Slice API! Go to /scalar/v1 for API documentation.");
 
+// Health check endpoint
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "Healthy",
+    message = "Car Show Registration System API is running."
+}))
+.WithTags("Health");
+
 // Map endpoints
 app.MapRegistrationEndpoints();
+
 app.Run();

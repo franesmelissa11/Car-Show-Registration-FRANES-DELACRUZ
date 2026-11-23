@@ -28,27 +28,40 @@ public sealed class GetRegistrationsQueryHandler(
                 x.CarMakeModel.Contains(search));
         }
 
-        // Filter by status
-        if (!string.IsNullOrWhiteSpace(query.Status) &&
-            Enum.TryParse<Domain.Enums.RegistrationStatus>(
-                query.Status, true, out var status))
+        if (!string.IsNullOrWhiteSpace(query.Status))
         {
-            registrations = registrations.Where(x => x.Status == status);
+            if (!Enum.TryParse<Domain.Enums.RegistrationStatus>(
+                query.Status, true, out var status))
+            {
+                return Result<GetRegistrationsResponse>.Failure(
+                    Error.Validation(
+                        "Registration.InvalidStatus",
+                        "The provided registration status is invalid."));
+            }
+
+            registrations = registrations.Where(r => r.Status == status);
         }
 
-        // Filter by registration type
-        if (!string.IsNullOrWhiteSpace(query.RegistrationType) &&
-            Enum.TryParse<Domain.Enums.RegistrationType>(
-                query.RegistrationType, true, out var type))
+        if (!string.IsNullOrWhiteSpace(query.RegistrationType))
         {
+            if (!Enum.TryParse<Domain.Enums.RegistrationType>(
+                query.RegistrationType, true, out var registrationType))
+            {
+                return Result<GetRegistrationsResponse>.Failure(
+                    Error.Validation(
+                        "Registration.InvalidType",
+                        "The provided registration type is invalid."));
+            }
+
             registrations = registrations.Where(
-                x => x.RegistrationType == type);
+                r => r.RegistrationType == registrationType);
         }
 
         var totalCount = await registrations.CountAsync(cancellationToken);
 
         var page = Math.Max(1, query.Page);
         var pageSize = Math.Clamp(query.PageSize, 1, 100);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         var items = await registrations
             .OrderByDescending(x => x.RegistrationDate)
@@ -75,10 +88,11 @@ public sealed class GetRegistrationsQueryHandler(
         )).ToList();
 
         return Result<GetRegistrationsResponse>.Success(
-            new GetRegistrationsResponse(
-                response,
-                page,
-                pageSize,
-                totalCount));
+         new GetRegistrationsResponse(
+         response,
+         page,
+         pageSize,
+         totalCount,
+         totalPages));
     }
 }

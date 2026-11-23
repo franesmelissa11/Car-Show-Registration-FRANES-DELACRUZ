@@ -1,5 +1,4 @@
-﻿
-using Application.Abstractions.Messaging;
+﻿using Application.Abstractions.Messaging;
 using Application.Features.Registrations.CreateRegistration;
 using Domain.Common;
 using FluentValidation;
@@ -10,6 +9,7 @@ using Application.Abstractions.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Registrations;
+
 public static class RegistrationEndpoints
 {
     public static IEndpointRouteBuilder MapRegistrationEndpoints(
@@ -17,6 +17,8 @@ public static class RegistrationEndpoints
     {
         var group = app.MapGroup("/api/registrations")
             .WithTags("Registrations");
+
+        // GET: All registrations
         group.MapGet("/", async (
             string? search,
             string? status,
@@ -36,9 +38,19 @@ public static class RegistrationEndpoints
             var result = await handler.HandleAsync(
                 query, cancellationToken);
 
+            if (!result.IsSuccess)
+            {
+                return Results.BadRequest(new
+                {
+                    result.Error?.Code,
+                    result.Error?.Message
+                });
+            }
+
             return Results.Ok(result.Value);
         });
 
+        // GET: Registration by ID
         group.MapGet("/{id:guid}", async (
             Guid id,
             IQueryHandler<GetRegistrationByIdQuery, Result<GetRegistrationByIdResponse>> handler,
@@ -60,6 +72,8 @@ public static class RegistrationEndpoints
 
             return Results.Ok(result.Value);
         });
+
+        // GET: Registration summary
         group.MapGet("/summary", async (
             IQueryHandler<GetRegistrationSummaryQuery, Result<GetRegistrationSummaryResponse>> handler,
             CancellationToken cancellationToken) =>
@@ -69,10 +83,19 @@ public static class RegistrationEndpoints
             var result = await handler.HandleAsync(
                 query, cancellationToken);
 
+            if (!result.IsSuccess)
+            {
+                return Results.BadRequest(new
+                {
+                    result.Error?.Code,
+                    result.Error?.Message
+                });
+            }
+
             return Results.Ok(result.Value);
         });
 
-
+        // POST: Create registration
         group.MapPost("/", async (
             CreateRegistrationCommand command,
             ICommandHandler<CreateRegistrationCommand, Result<Guid>> handler,
