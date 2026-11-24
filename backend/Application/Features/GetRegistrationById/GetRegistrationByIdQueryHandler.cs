@@ -1,10 +1,10 @@
-﻿
-using Application.Abstractions.Data;
+﻿using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.GetRegistrationById;
+
 public sealed class GetRegistrationByIdQueryHandler(
     IAppDbContext dbContext)
     : IQueryHandler<GetRegistrationByIdQuery, Result<GetRegistrationByIdResponse>>
@@ -30,7 +30,8 @@ public sealed class GetRegistrationByIdQueryHandler(
         var paymentStatus =
             registration.AmountPaid == 0 ? "Unpaid" :
             registration.AmountPaid < registration.RegistrationFee ? "Partial" :
-            "Paid";
+            registration.AmountPaid == registration.RegistrationFee ? "Paid" :
+            "Overpaid";
 
         var response = new GetRegistrationByIdResponse(
             registration.Id,
