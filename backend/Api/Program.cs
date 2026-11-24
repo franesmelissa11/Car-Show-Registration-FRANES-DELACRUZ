@@ -156,6 +156,15 @@ if (app.Environment.IsDevelopment())
 // Root endpoint
 app.MapGet("/", () => "Welcome to the Vertical Slice API! Go to /scalar/v1 for API documentation.");
 
+// Health check endpoint
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "Healthy",
+    message = "Car Show Registration System API is running."
+}))
+.WithTags("Health");
+
 // Map endpoints
 app.MapRegistrationEndpoints();
+
 app.Run();
