@@ -63,8 +63,12 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, _, _) =>
     {
-        document.Info.Title = "Vertical Slice API Template by Elvin Manuel R. Luces, MIT";
-        document.Info.Description = "A simple API demonstrating Vertical Slice Architecture";
+        document.Info.Title = "Car Show Registration System API";
+        document.Info.Description =
+            "Backend API for managing car show registrations, participant information, registration types, payment details, and registration summaries.";
+
+        document.Info.Version = "v1";
+
         return Task.CompletedTask;
     });
 });
