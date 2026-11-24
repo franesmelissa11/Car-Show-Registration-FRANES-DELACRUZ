@@ -79,7 +79,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    for (int number = 2; number <= 25; number++)
+    for (int number = 1; number <= 25; number++)
     {
         var registrationNumber = $"CS27-{number:0000}";
 
