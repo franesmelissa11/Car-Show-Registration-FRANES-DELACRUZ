@@ -28,21 +28,33 @@ public sealed class GetRegistrationsQueryHandler(
                 x.CarMakeModel.Contains(search));
         }
 
-        // Filter by status
-        if (!string.IsNullOrWhiteSpace(query.Status) &&
-            Enum.TryParse<Domain.Enums.RegistrationStatus>(
-                query.Status, true, out var status))
+        if (!string.IsNullOrWhiteSpace(query.Status))
         {
-            registrations = registrations.Where(x => x.Status == status);
+            if (!Enum.TryParse<Domain.Enums.RegistrationStatus>(
+                query.Status, true, out var status))
+            {
+                return Result<GetRegistrationsResponse>.Failure(
+                    Error.Validation(
+                        "Registration.InvalidStatus",
+                        "The provided registration status is invalid."));
+            }
+
+            registrations = registrations.Where(r => r.Status == status);
         }
 
-        // Filter by registration type
-        if (!string.IsNullOrWhiteSpace(query.RegistrationType) &&
-            Enum.TryParse<Domain.Enums.RegistrationType>(
-                query.RegistrationType, true, out var type))
+        if (!string.IsNullOrWhiteSpace(query.RegistrationType))
         {
+            if (!Enum.TryParse<Domain.Enums.RegistrationType>(
+                query.RegistrationType, true, out var registrationType))
+            {
+                return Result<GetRegistrationsResponse>.Failure(
+                    Error.Validation(
+                        "Registration.InvalidType",
+                        "The provided registration type is invalid."));
+            }
+
             registrations = registrations.Where(
-                x => x.RegistrationType == type);
+                r => r.RegistrationType == registrationType);
         }
 
         var totalCount = await registrations.CountAsync(cancellationToken);
