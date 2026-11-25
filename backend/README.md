@@ -38,6 +38,7 @@ How to Run
 2. Open the terminal.
 3. Run dotnet restore.
 4. Run dotnet build.
+5. Run dotnet run --project Api.
 
 API Testing
 
@@ -50,6 +51,4 @@ Project Structure
 * Api – Handles API endpoints.
 * Application – Contains application features and handlers.
 * Domain – Contains entities and business rules.
-* Infrastructure – Handles database operations
-6. Run dotnet run --project Api.
-
+* Infrastructure – Handles database operations.
